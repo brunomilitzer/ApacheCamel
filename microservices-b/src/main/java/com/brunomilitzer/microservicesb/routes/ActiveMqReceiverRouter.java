@@ -1,8 +1,16 @@
 package com.brunomilitzer.microservicesb.routes;
 
 import com.brunomilitzer.microservicesb.model.CurrencyExchange;
+import java.io.IOException;
 import java.math.BigDecimal;
+import java.security.Key;
+import java.security.KeyStore;
+import java.security.KeyStoreException;
+import java.security.NoSuchAlgorithmException;
+import java.security.UnrecoverableKeyException;
+import java.security.cert.CertificateException;
 import org.apache.camel.builder.RouteBuilder;
+import org.apache.camel.converter.crypto.CryptoDataFormat;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,8 +40,23 @@ public class ActiveMqReceiverRouter extends RouteBuilder {
             .jacksonxml(CurrencyExchange.class)
             .to("log:received-message-from-active-mq");*/
 
-        from("activemq:split-queue")
+        /*from("activemq:split-queue")
+            .log("log:received-message-from-active-mq");*/
+
+        from("activemq:my-activemq-queue")
+            .unmarshal(createEncryptor())
             .log("log:received-message-from-active-mq");
+    }
+
+    private CryptoDataFormat createEncryptor() throws KeyStoreException, IOException, NoSuchAlgorithmException,
+        CertificateException, UnrecoverableKeyException {
+        KeyStore keyStore = KeyStore.getInstance("JCEKS");
+        ClassLoader classLoader = getClass().getClassLoader();
+        keyStore.load(classLoader.getResourceAsStream("myDesKey.jceks"), "someKeystorePassword".toCharArray());
+        Key sharedKey = keyStore.getKey("myDesKey", "someKeyPassword".toCharArray());
+
+        CryptoDataFormat sharedKeyCrypto = new CryptoDataFormat("DES", sharedKey);
+        return sharedKeyCrypto;
     }
 }
 

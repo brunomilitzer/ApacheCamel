@@ -4,8 +4,8 @@
 
 **_Projects_**
 
-1. [Microservices A](https://github.com/brunomilitzer/ApacheCamel/tree/main/microservices-a)
-2. [Microservices B](https://github.com/brunomilitzer/ApacheCamel/tree/main/microservices-b)
+1. [Microservices A](https://github.com/brunomilitzer/ApacheCamel/tree/master/microservices-a)
+2. [Microservices B](https://github.com/brunomilitzer/ApacheCamel/tree/master/microservices-b)
 
 Profiles Demo
 
